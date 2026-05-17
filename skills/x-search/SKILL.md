@@ -6,7 +6,7 @@ description: >-
   user pastes an x.com / twitter.com URL — by delegating to the local Hermes
   Agent one-shot mode. Use when the user says 「X検索」「Xで検索」
   「Xで最新情報」「Xで調べて」「ツイート検索」「Xのトレンド」「X search」
-  「latest on X」, asks for X/Twitter post URLs, or pastes any x.com /
+  「latest on X」「ディープリサーチ」「deep research」, asks for X/Twitter post URLs, or pastes any x.com /
   twitter.com link (post or profile). Hermes has Grok-backed X search built
   in — no X API key required (an X Premium account on this machine is required).
 allowed-tools: Bash
@@ -148,6 +148,38 @@ exact shape (this is the preferred display):
 - `投稿全文` is a blockquote — keep emoji, hashtags, and line breaks.
 - `🔗 投稿URL` is mandatory on every block; never omit it.
 - After the list, add the one-line verification caveat.
+
+## Deep research mode
+
+**Trigger:** the user says 「ディープリサーチ」「ディープリサーチを使用して」
+「deep research」 (usually with a topic). Instead of a single query, this runs
+an **iterative 5-round** X search that widens coverage each round.
+
+The loop — 5 rounds, 5 distinct queries:
+1. **Round 1** — run a normal search-mode `hermes -z` query for the topic.
+2. **Analyze the gap** — compare what the results actually cover against the
+   research goal. Name concrete gaps: unanswered sub-questions, missing angles,
+   missing viewpoints / time periods / key accounts.
+3. **Refine** — write a NEW query targeting the biggest gap. It must be a
+   genuinely different angle, not a reword of the previous query.
+4. Run the new query.
+5. Repeat steps 2–4 until **5 rounds** are done. (Obey a different round count
+   if the user explicitly asks for one.)
+
+Rules:
+- Every round obeys the 🔴 transcribe rule and the `x_search`-tool rule:
+  verbatim post text + source URL for every result, in every round.
+- De-duplicate — skip posts already found in earlier rounds.
+- Keep all query strings; list them at the end so the research path is visible.
+- If a round surfaces nothing new, say so; then continue, or stop early and
+  explain why.
+
+**Final output:**
+1. Per-round results in the Output format above (grouped by round).
+2. A **synthesis** — combined findings organized by sub-topic, what each round
+   added, and the remaining open questions.
+3. The list of all queries used, in order.
+4. The verification caveat.
 
 ## Caveats — always tell the user
 
