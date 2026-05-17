@@ -46,7 +46,7 @@ npx skills list -g
 
 ## Requirements
 
-- [Hermes Agent](https://github.com/) CLI installed and on `PATH` (`hermes`).
+- The Hermes Agent CLI installed and on `PATH` (`hermes`).
 - An **X Premium (or higher)** account signed into Hermes.
 
 ## Notes
